@@ -186,7 +186,7 @@ tmpdir() {
 GETOPT="getopt"
 SHRED="shred -f -z"
 
-source "$(dirname "$0")/platform/$(uname | cut -d _ -f 1 | tr '[:upper:]' '[:lower:]').sh" 2>/dev/null # PLATFORM_FUNCTION_FILE
+source "$(dirname -- "$0")/platform/$(uname | cut -d _ -f 1 | tr '[:upper:]' '[:lower:]').sh" 2>/dev/null # PLATFORM_FUNCTION_FILE
 
 #
 # END platform definable
@@ -374,8 +374,8 @@ cmd_insert() {
 
 	[[ $force -eq 0 && -e $passfile ]] && yesno "An entry already exists for $path. Overwrite it?"
 
-	mkdir -p -v "$PREFIX/$(dirname "$path")"
-	set_gpg_recipients "$(dirname "$path")"
+	mkdir -p -v "$PREFIX/$(dirname -- "$path")"
+	set_gpg_recipients "$(dirname -- "$path")"
 
 	if [[ $multiline -eq 1 ]]; then
 		echo "Enter contents of $path and press Ctrl+D when finished:"
@@ -408,8 +408,8 @@ cmd_edit() {
 
 	local path="${1%/}"
 	check_sneaky_paths "$path"
-	mkdir -p -v "$PREFIX/$(dirname "$path")"
-	set_gpg_recipients "$(dirname "$path")"
+	mkdir -p -v "$PREFIX/$(dirname -- "$path")"
+	set_gpg_recipients "$(dirname -- "$path")"
 	local passfile="$PREFIX/$path.gpg"
 
 	tmpdir #Defines $SECURE_TMPDIR
@@ -448,8 +448,8 @@ cmd_generate() {
 	local length="${2:-$GENERATED_LENGTH}"
 	check_sneaky_paths "$path"
 	[[ ! $length =~ ^[0-9]+$ ]] && die "Error: pass-length \"$length\" must be a number."
-	mkdir -p -v "$PREFIX/$(dirname "$path")"
-	set_gpg_recipients "$(dirname "$path")"
+	mkdir -p -v "$PREFIX/$(dirname -- "$path")"
+	set_gpg_recipients "$(dirname -- "$path")"
 	local passfile="$PREFIX/$path.gpg"
 
 	[[ $inplace -eq 0 && $force -eq 0 && -e $passfile ]] && yesno "An entry already exists for $path. Overwrite it?"

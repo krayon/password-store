@@ -1,25 +1,57 @@
 #!/usr/bin/env bash
 
+# Expand ALL the globs
 shopt -s nullglob globstar
 
+[ "${1}" == "--help" ] || [ "${1}" == "-h" ] && {
+cat <<EOF
+Usage: $(basename "${0}") [--help|-h]
+       $(basename "${0}") [--type|-t] [--case-sensitive|-c]
+EOF
+
+    exit 0
+}
+
 typeit=0
-if [[ $1 == "--type" ]]; then
-	typeit=1
-	shift
-fi
+case="-i"
+while [ ${#} -gt 0 ]; do #{
+    [ "${1}" == "--type" ] || [ "${1}" == "-t" ] && {
+        typeit=1
+        shift 1
+        continue
+    }
+
+    [ "${1}" == "--case-sensitive" ] || [ "${1}" == "-c" ] && {
+        case=""
+        shift 1
+        continue
+    }
+
+    [ ${#} -gt 0 ] && {
+        echo "ERROR: Unrecognised param(s): ${@}" >&2
+        exit 128
+    }
+done #}
 
 prefix=${PASSWORD_STORE_DIR-~/.password-store}
 password_files=( "$prefix"/**/*.gpg )
 password_files=( "${password_files[@]#"$prefix"/}" )
 password_files=( "${password_files[@]%.gpg}" )
 
-password=$(printf '%s\n' "${password_files[@]}" | dmenu "$@")
+password=$(printf '%s\n' "${password_files[@]}" | dmenu ${case} "$@")
 
-[[ -n $password ]] || exit
+[ -z "${password}" ] && exit 129
 
-if [[ $typeit -eq 0 ]]; then
-	pass show -c "$password" 2>/dev/null
+if [ "${typeit}" -eq 0 ]; then
+    pass show -c "${password}" 2>/dev/null
 else
-	pass show "$password" | { read -r pass; printf %s "$pass"; } |
-		xdotool type --clearmodifiers --file -
+# --file doesn't work for my xdotool (2.20110530.1)
+#    pass show "${password}"\
+#    |{ read -r pass; printf %s "$pass"; }\
+#    |xdotool type --clearmodifiers --file -
+    pass show "${password}"\
+    |{ read -r pass; printf %s "type --clearmodifiers $pass"; }\
+    |xdotool -
 fi
+
+# vim:ts=4:tw=80:sw=4:et:ai:si

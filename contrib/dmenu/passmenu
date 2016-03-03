@@ -43,7 +43,7 @@ password=$(printf '%s\n' "${password_files[@]}" | dmenu ${case} "$@")
 [ -z "${password}" ] && exit 129
 
 if [ "${typeit}" -eq 0 ]; then
-    pass show -c "${password}" 2>/dev/null
+    pass show -c -- "${password}" 2>/dev/null
 else
 # --file doesn't work for my xdotool (2.20110530.1)
 #    pass show "${password}"\

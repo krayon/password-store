@@ -3,10 +3,27 @@
 # Expand ALL the globs
 shopt -s nullglob globstar
 
+appname="$(basename "${0}")"
+
 [ "${1}" == "--help" ] || [ "${1}" == "-h" ] && {
+
 cat <<EOF
-Usage: $(basename "${0}") [--help|-h]
-       $(basename "${0}") [--type|-t] [--case-sensitive|-c]
+
+Retrieves a password from a password store (pass(1)) database, selected using
+dmenu.
+
+Usage: ${appname} --help|-h
+       ${appname} [--type|-t] [--case-sensitive|-c]
+
+
+--help|-h           - Displays this help
+--type|-t           - The output will be 'typed', as if it were entered with a
+                      keyboard. If this option is not specified, the output will
+                      be copied to the clipboard.
+--case-sensitive|-c - Searches the password store in case sensitive format. By
+                      default the search will be case INsensitive.
+
+Example: ${appname} -t -c
 EOF
 
     exit 0

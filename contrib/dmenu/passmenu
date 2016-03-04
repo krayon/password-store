@@ -62,13 +62,9 @@ password=$(printf '%s\n' "${password_files[@]}" | dmenu ${case} "$@")
 if [ "${typeit}" -eq 0 ]; then
     pass show -c -- "${password}" 2>/dev/null
 else
-# --file doesn't work for my xdotool (2.20110530.1)
-#    pass show "${password}"\
-#    |{ read -r pass; printf %s "$pass"; }\
-#    |xdotool type --clearmodifiers --file -
     pass show "${password}"\
-    |{ read -r pass; printf %s "type --clearmodifiers $pass"; }\
-    |xdotool -
+    |{ read -r pass; printf %s "$pass"; }\
+    |xdotool type --clearmodifiers --file -
 fi
 
 # vim:ts=4:tw=80:sw=4:et:ai:si

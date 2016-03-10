@@ -4,9 +4,13 @@ by Jason Donenfeld
    Jason@zx2c4.com
 ======================
 
-This is a very simple password store that encrypts passwords using gpg and
-places the encrypted password in a directory. It can generate new passwords
-and keep track of old ones.
+NOTE: This is a fork with with changes. The original is available from:
+
+    https://git.zx2c4.com/password-store
+
+This is a fork of a very simple password store that encrypts passwords using
+gpg and places the encrypted password in a directory. It can generate new
+passwords and keep track of old ones.
 
 Visit the project page for more information: http://www.passwordstore.org/
 

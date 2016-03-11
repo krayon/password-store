@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# Depends on:
+# - pass
+# - bash
+# - xdotool >= 3 ( >= 2013-12-06 )
+
 # Expand ALL the globs
 shopt -s nullglob globstar
 

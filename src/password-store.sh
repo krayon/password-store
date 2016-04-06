@@ -321,7 +321,7 @@ cmd_show() {
 				pass="$($GPG -d "${GPG_OPTS[@]}" "$passfile" | tail -n +${clip_location} | head -n 1)"
 			else
 				# If we're looking for line beginning with, print the first match and break out
-				pass="$($GPG -d "${GPG_OPTS[@]}" "$passfile" | grep -m 1 "^${clip_location}")"
+				pass="$($GPG -d "${GPG_OPTS[@]}" "$passfile"|sed -n '/^'"${clip_location}"'/{s/^'"${clip_location}"'\(.*\)$/\1/p;q}')"
 			fi
 			[[ -n $pass ]] || die "There is no password to put on the clipboard at line '${clip_location}'."
 			clip "$pass" "$path"

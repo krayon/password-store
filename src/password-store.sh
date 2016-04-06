@@ -223,10 +223,12 @@ cmd_usage() {
 	    $PROGRAM [ls] [subfolder]
 	        List passwords.
 	    $PROGRAM find pass-names...
-	    	List passwords that match pass-names.
+	        List passwords that match pass-names.
 	    $PROGRAM [show] [--clip[=line],-c[line]] pass-name
-	        Show existing password and optionally put it on the clipboard.
-	        If put on the clipboard, it will be cleared in $CLIP_TIME seconds.
+	        Decrypt and print a password named pass-name. If --clip/-c is
+	        specified, password (or contents of line AFTER but beginning with
+	        <line>, if specified) will instead be copied to the clipboard and
+	        cleared in $CLIP_TIME seconds.
 	    $PROGRAM grep search-string
 	        Search for password files containing search-string when decrypted.
 	    $PROGRAM insert [--echo,-e | --multiline,-m] [--force,-f] pass-name
@@ -314,9 +316,11 @@ cmd_show() {
 			$GPG -d "${GPG_OPTS[@]}" "$passfile" || exit $?
 		else
 			local pass
+			# If clip_location is a number, perceive as line number
 			if [[ $clip_location =~ ^[0-9]+$ ]]; then
 				pass="$($GPG -d "${GPG_OPTS[@]}" "$passfile" | tail -n +${clip_location} | head -n 1)"
 			else
+				# If we're looking for line beginning with, print the first match and break out
 				pass="$($GPG -d "${GPG_OPTS[@]}" "$passfile" | grep -m 1 "^${clip_location}")"
 			fi
 			[[ -n $pass ]] || die "There is no password to put on the clipboard at line '${clip_location}'."

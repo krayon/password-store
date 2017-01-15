@@ -67,7 +67,7 @@ password=$(printf '%s\n' "${password_files[@]}" | dmenu ${case} "$@")
 if [ "${typeit}" -eq 0 ]; then
     pass show -c -- "${password}" 2>/dev/null
 else
-    pass show "${password}"\
+    pass show -- "${password}"\
     |{ read -r pass; printf %s "$pass"; }\
     |xdotool type --clearmodifiers --file -
 fi

@@ -18,13 +18,15 @@ Retrieves a password from a password store (pass(1)) database, selected using
 dmenu.
 
 Usage: ${appname} --help|-h
-       ${appname} [--type|-t] [--case-sensitive|-c]
+       ${appname} [--type[=line]|-t[line]] [--case-sensitive|-c]
 
 
 --help|-h           - Displays this help
 --type|-t           - The output will be 'typed', as if it were entered with a
                       keyboard. If this option is not specified, the output will
-                      be copied to the clipboard.
+                      be copied to the clipboard. If <line> is specified, the
+                      remainder of the first line starting with <line> will be
+                      copied, otherwise the password.
 --case-sensitive|-c - Searches the password store in case sensitive format. By
                       default the search will be case INsensitive.
 
@@ -34,11 +36,17 @@ EOF
     exit 0
 }
 
-typeit=0
 case="-i"
 while [ ${#} -gt 0 ]; do #{
-    [ "${1}" == "--type" ] || [ "${1}" == "-t" ] && {
-        typeit=1
+    [ "${1:0:6}" == "--type" ] && {
+        typeit="${1:6}"
+        [ "${typeit:1:1}" == "=" ] && typeit="${type:1}"
+        shift 1
+        continue
+    }
+
+    [ "${1:0:2}" == "-t" ] && {
+        typeit="${1:2}"
         shift 1
         continue
     }
@@ -64,12 +72,28 @@ password=$(printf '%s\n' "${password_files[@]}" | dmenu ${case} "$@")
 
 [ -z "${password}" ] && exit 129
 
-if [ "${typeit}" -eq 0 ]; then
-    pass show -c -- "${password}" 2>/dev/null
-else
-    pass show -- "${password}"\
+# Is typeit set?
+[ ! -z "${typeit+x}" ] || {
+    # If not...
+    exec pass show -c -- "${password}" 2>/dev/null
+}
+
+# Is typeit set but empty?
+[ -z "${typeit}" ] && {
+    pass show -c -- "${password}" &>/dev/null\
+    && {
+        xclip -o\
+        |{ read -r pass; printf %s "$pass"; }\
+        |xdotool type --clearmodifiers --file -
+    }
+    exit 0
+}
+
+pass show --clip="${typeit}" "${password}" &>/dev/null\
+&& {
+    xclip -o\
     |{ read -r pass; printf %s "$pass"; }\
     |xdotool type --clearmodifiers --file -
-fi
+}
 
 # vim:ts=4:tw=80:sw=4:et:ai:si

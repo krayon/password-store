@@ -40,7 +40,7 @@ case="-i"
 while [ ${#} -gt 0 ]; do #{
     [ "${1:0:6}" == "--type" ] && {
         typeit="${1:6}"
-        [ "${typeit:1:1}" == "=" ] && typeit="${type:1}"
+        [ "${typeit:0:1}" == "=" ] && typeit="${typeit:1}"
         shift 1
         continue
     }

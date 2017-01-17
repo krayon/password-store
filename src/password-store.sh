@@ -570,6 +570,10 @@ cmd_git() {
 		git_add_file .gitattributes "Configure git repository for gpg file diff."
 		git config --local diff.gpg.binary true
 		git config --local diff.gpg.textconv "$GPG -d ${GPG_OPTS[*]}"
+	elif [[ $1 == "clone" ]]; then
+		git clone "${2}" "${GIT_DIR}" "${@:3}"|| exit 1
+		git config --local diff.gpg.binary true
+		git config --local diff.gpg.textconv "$GPG -d ${GPG_OPTS[*]}"
 	elif [[ -d $GIT_DIR ]]; then
 		tmpdir nowarn #Defines $SECURE_TMPDIR. We don't warn, because at most, this only copies encrypted files.
 		export TMPDIR="$SECURE_TMPDIR"

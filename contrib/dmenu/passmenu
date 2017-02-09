@@ -80,20 +80,22 @@ password=$(printf '%s\n' "${password_files[@]}" | dmenu ${case} "$@")
 
 # Is typeit set but empty?
 [ -z "${typeit}" ] && {
+# --file doesn't work for older xdotool (2.20110530.1)
     pass show -c -- "${password}" &>/dev/null\
     && {
         xclip -o\
-        |{ read -r pass; printf %s "$pass"; }\
-        |xdotool type --clearmodifiers --file -
+        |{ read -r pass; printf %s "type --clearmodifiers \"$pass\""; }\
+        |xdotool -
     }
     exit 0
 }
 
+# --file doesn't work for older xdotool (2.20110530.1)
 pass show --clip="${typeit}" "${password}" &>/dev/null\
 && {
     xclip -o\
-    |{ read -r pass; printf %s "$pass"; }\
-    |xdotool type --clearmodifiers --file -
+    |{ read -r pass; printf %s "type --clearmodifiers \"$pass\""; }\
+    |xdotool -
 }
 
 # vim:ts=4:tw=80:sw=4:et:ai:si
